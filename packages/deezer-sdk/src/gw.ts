@@ -494,20 +494,30 @@ export class GW {
 			}
 		});
 
-		// Fetch individual tracks from featured albums
-		for (const featuredAlbum of result.featured) {
-			try {
-				const albumTracks = await this.get_album_tracks(featuredAlbum.id);
-				for (const track of albumTracks) {
-					if (
-						track.ARTISTS &&
-						track.ARTISTS.some((a) => String(a.ART_ID) === String(art_id))
-					) {
-						result.featuredTracks.push(mapGwTrackToDeezer(track));
-					}
+		// Fetch individual tracks from featured albums in parallel
+		const trackResults = await Promise.all(
+			result.featured.map(async (featuredAlbum) => {
+				try {
+					const albumTracks = await this.get_album_tracks(featuredAlbum.id);
+					return albumTracks.filter(
+						(track) =>
+							track.ARTISTS &&
+							track.ARTISTS.some((a) => String(a.ART_ID) === String(art_id))
+					);
+				} catch (e) {
+					console.error(
+						"[ERROR] deezer.gw",
+						"get_album_tracks",
+						featuredAlbum.id,
+						e.message
+					);
+					return [];
 				}
-			} catch {
-				// Skip albums where track fetching fails
+			})
+		);
+		for (const tracks of trackResults) {
+			for (const track of tracks) {
+				result.featuredTracks.push(mapGwTrackToDeezer(track));
 			}
 		}
 

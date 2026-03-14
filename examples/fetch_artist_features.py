@@ -326,9 +326,11 @@ def get_artist_discography_tabs(
                 artists = track.get("ARTISTS", [])
                 if any(str(a.get("ART_ID")) == str(artist_id) for a in artists):
                     result["featuredTracks"].append(map_gw_track(track))
-        except Exception:
-            # Skip albums where track fetching fails
-            pass
+        except Exception as exc:
+            print(
+                f"[ERROR] get_album_tracks {featured_album['id']}: {exc}",
+                file=sys.stderr,
+            )
 
     return result
 
