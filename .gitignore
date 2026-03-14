@@ -31,3 +31,8 @@ packages/webui/public/js/*
 .turbo
 tsconfig.tsbuildinfo
 vite.config.*.timestamp-*
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
