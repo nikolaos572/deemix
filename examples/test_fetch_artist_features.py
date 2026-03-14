@@ -12,8 +12,8 @@ import os
 
 import pytest
 
-# Add the examples directory to sys.path so we can import the module
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "examples"))
+# Add the current directory to sys.path so we can import the module
+sys.path.insert(0, os.path.dirname(__file__))
 import fetch_artist_features as faf
 
 
