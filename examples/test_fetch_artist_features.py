@@ -52,6 +52,33 @@ def _make_release(
     }
 
 
+def _make_track(
+    sng_id="999",
+    sng_title="Test Track",
+    art_id="810507",
+    art_name="Test Artist",
+    alb_id="123",
+    alb_title="Test Album",
+    alb_picture="pic123",
+    artists=None,
+):
+    """Build a minimal GW-light track object for testing."""
+    track = {
+        "SNG_ID": sng_id,
+        "SNG_TITLE": sng_title,
+        "ART_ID": art_id,
+        "ART_NAME": art_name,
+        "ALB_ID": alb_id,
+        "ALB_TITLE": alb_title,
+        "ALB_PICTURE": alb_picture,
+        "DURATION": 200,
+        "ISRC": "USRC12345678",
+    }
+    if artists is not None:
+        track["ARTISTS"] = artists
+    return track
+
+
 class TestMapArtistAlbum:
     def test_basic_mapping(self):
         release = _make_release(alb_id="456", alb_title="My Album")
@@ -120,6 +147,48 @@ class TestIsExplicit:
         assert faf._is_explicit("abc") is False
 
 
+class TestMapGwTrack:
+    def test_basic_mapping(self):
+        track = _make_track(sng_id="42", sng_title="Cool Song", alb_id="7")
+        mapped = faf.map_gw_track(track)
+
+        assert mapped["id"] == "42"
+        assert mapped["title"] == "Cool Song"
+        assert mapped["type"] == "track"
+        assert mapped["link"] == "https://www.deezer.com/track/42"
+        assert mapped["album"]["id"] == "7"
+        assert mapped["artist"]["name"] == "Test Artist"
+
+    def test_version_handling(self):
+        track = _make_track(sng_title="My Song")
+        track["VERSION"] = "(Remix)"
+        mapped = faf.map_gw_track(track)
+
+        assert mapped["title"] == "My Song (Remix)"
+        assert mapped["title_short"] == "My Song"
+        assert mapped["title_version"] == "(Remix)"
+
+    def test_contributors_from_artists(self):
+        track = _make_track(
+            artists=[
+                {"ART_ID": "1", "ART_NAME": "Main", "ROLE_ID": 0},
+                {"ART_ID": "2", "ART_NAME": "Feat", "ROLE_ID": 5},
+            ]
+        )
+        mapped = faf.map_gw_track(track)
+
+        assert len(mapped["contributors"]) == 2
+        assert mapped["contributors"][0]["name"] == "Main"
+        assert mapped["contributors"][0]["role"] == "Main"
+        assert mapped["contributors"][1]["name"] == "Feat"
+        assert mapped["contributors"][1]["role"] == "Featured"
+
+    def test_no_artists_field(self):
+        track = _make_track()
+        mapped = faf.map_gw_track(track)
+        assert "contributors" not in mapped
+
+
 class TestDiscographyCategorisation:
     """Test the categorisation logic that splits releases into buckets.
 
@@ -129,7 +198,7 @@ class TestDiscographyCategorisation:
 
     def _run_categorisation(self, releases, artist_id=810507):
         """Simulate get_artist_discography_tabs with pre-built releases."""
-        result = {"all": [], "featured": [], "more": []}
+        result = {"all": [], "featured": [], "featuredTracks": [], "more": []}
         seen_ids = set()
 
         for release in releases:
@@ -164,6 +233,7 @@ class TestDiscographyCategorisation:
         result = self._run_categorisation(releases)
         assert len(result["all"]) == 1
         assert len(result["featured"]) == 0
+        assert len(result["featuredTracks"]) == 0
         assert len(result["more"]) == 0
         assert "album" in result
         assert len(result["album"]) == 1
@@ -207,3 +277,9 @@ class TestDiscographyCategorisation:
         assert len(result["more"]) == 1
         assert len(result["single"]) == 1
         assert len(result["album"]) == 1
+
+    def test_featured_tracks_key_exists(self):
+        """The result always contains a featuredTracks list."""
+        result = self._run_categorisation([])
+        assert "featuredTracks" in result
+        assert isinstance(result["featuredTracks"], list)

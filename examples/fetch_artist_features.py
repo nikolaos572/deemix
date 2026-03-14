@@ -19,6 +19,10 @@ Mechanism
 4. Releases are de-duplicated by album ID and categorised into ``all``,
    ``featured``, and ``more`` buckets, mirroring the logic in
    ``packages/deezer-sdk/src/gw.ts`` (``get_artist_discography_tabs``).
+5. For each featured album, the individual tracks are fetched via
+   ``song.getListByAlbum``.  Tracks where the queried artist appears in the
+   ``ARTISTS`` array are collected into a ``featuredTracks`` list so that
+   consumers can access both the album-level and track-level featured data.
 
 Usage
 -----
@@ -104,6 +108,96 @@ def get_artist_discography(
     )
 
 
+def get_album_tracks(
+    session: requests.Session,
+    api_token: str,
+    album_id: int | str,
+) -> list[dict[str, Any]]:
+    """Fetch all tracks for a given album via ``song.getListByAlbum``."""
+    body = _gw_api_call(
+        session,
+        "song.getListByAlbum",
+        {"ALB_ID": album_id, "nb": -1},
+        api_token=api_token,
+    )
+    tracks: list[dict[str, Any]] = []
+    for idx, track in enumerate(body.get("data", [])):
+        track["POSITION"] = idx
+        tracks.append(track)
+    return tracks
+
+
+def map_gw_track(track: dict[str, Any]) -> dict[str, Any]:
+    """Map a GW-light track object to the standardised Deezer API format.
+
+    This mirrors ``mapGwTrackToDeezer`` in ``packages/deezer-sdk/src/utils.ts``.
+    """
+    sng_id = track.get("SNG_ID", 0)
+    alb_id = track.get("ALB_ID", "")
+    alb_picture = track.get("ALB_PICTURE", "")
+    art_id = track.get("ART_ID", "")
+
+    result: dict[str, Any] = {
+        "id": sng_id,
+        "readable": True,
+        "title": track.get("SNG_TITLE", ""),
+        "title_short": track.get("SNG_TITLE", ""),
+        "isrc": track.get("ISRC"),
+        "link": f"https://www.deezer.com/track/{sng_id}",
+        "duration": track.get("DURATION"),
+        "md5_image": alb_picture,
+        "artist": {
+            "id": art_id,
+            "name": track.get("ART_NAME", ""),
+            "link": f"https://www.deezer.com/artist/{art_id}",
+            "tracklist": f"https://api.deezer.com/artist/{art_id}/top?limit=50",
+            "type": "artist",
+        },
+        "album": {
+            "id": alb_id,
+            "title": track.get("ALB_TITLE", ""),
+            "link": f"https://www.deezer.com/album/{alb_id}",
+            "cover": f"https://api.deezer.com/album/{alb_id}/image",
+            "cover_small": f"https://e-cdns-images.dzcdn.net/images/cover/{alb_picture}/56x56-000000-80-0-0.jpg",
+            "cover_medium": f"https://e-cdns-images.dzcdn.net/images/cover/{alb_picture}/250x250-000000-80-0-0.jpg",
+            "cover_big": f"https://e-cdns-images.dzcdn.net/images/cover/{alb_picture}/500x500-000000-80-0-0.jpg",
+            "cover_xl": f"https://e-cdns-images.dzcdn.net/images/cover/{alb_picture}/1000x1000-000000-80-0-0.jpg",
+            "md5_image": alb_picture,
+            "tracklist": f"https://api.deezer.com/album/{alb_id}/tracks",
+            "type": "album",
+        },
+        "type": "track",
+    }
+
+    version = (track.get("VERSION") or "").strip()
+    if version:
+        title_short = result["title_short"]
+        if version in title_short:
+            title_short = title_short.replace(version, "").strip()
+        result["title_short"] = title_short
+        result["title"] = f"{title_short} {version}".strip()
+        result["title_version"] = version
+
+    if track.get("ARTISTS"):
+        result["contributors"] = [
+            {
+                "id": c.get("ART_ID"),
+                "name": c.get("ART_NAME"),
+                "link": f"https://www.deezer.com/artist/{c.get('ART_ID')}",
+                "role": (
+                    ROLE_NAMES[c["ROLE_ID"]]
+                    if c.get("ROLE_ID") is not None
+                    and c["ROLE_ID"] < len(ROLE_NAMES)
+                    else None
+                ),
+                "type": "artist",
+            }
+            for c in track["ARTISTS"]
+        ]
+
+    return result
+
+
 def _is_explicit(explicit_lyrics: Any) -> bool:
     """Return ``True`` when the content is marked as explicit."""
     try:
@@ -172,9 +266,9 @@ def get_artist_discography_tabs(
     This mirrors ``get_artist_discography_tabs`` in
     ``packages/deezer-sdk/src/gw.ts``.
 
-    Returns a dict with at least the keys ``all``, ``featured``, and ``more``.
-    Additional keys are created for each record type encountered (e.g.
-    ``single``, ``album``, ``compile``, ``ep``).
+    Returns a dict with at least the keys ``all``, ``featured``,
+    ``featuredTracks``, and ``more``.  Additional keys are created for each
+    record type encountered (e.g. ``single``, ``album``, ``compile``, ``ep``).
     """
     session = requests.Session()
     api_token = get_api_token(session)
@@ -194,6 +288,7 @@ def get_artist_discography_tabs(
     result: dict[str, list[dict[str, Any]]] = {
         "all": [],
         "featured": [],
+        "featuredTracks": [],
         "more": [],
     }
     seen_ids: set[str] = set()
@@ -222,6 +317,18 @@ def get_artist_discography_tabs(
         elif role_id == 0:
             result["more"].append(obj)
             result["all"].append(obj)
+
+    # Fetch individual tracks from featured albums
+    for featured_album in result["featured"]:
+        try:
+            album_tracks = get_album_tracks(session, api_token, featured_album["id"])
+            for track in album_tracks:
+                artists = track.get("ARTISTS", [])
+                if any(str(a.get("ART_ID")) == str(artist_id) for a in artists):
+                    result["featuredTracks"].append(map_gw_track(track))
+        except Exception:
+            # Skip albums where track fetching fails
+            pass
 
     return result
 

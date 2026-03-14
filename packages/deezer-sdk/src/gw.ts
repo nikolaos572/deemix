@@ -1,6 +1,7 @@
 import got from "got";
 import {
 	map_artist_album,
+	mapGwTrackToDeezer,
 	map_user_track,
 	map_user_artist,
 	map_user_album,
@@ -456,7 +457,7 @@ export class GW {
 		const limit = options.limit || 100;
 		let index = 0;
 		let releases = [];
-		const result: any = { all: [], featured: [], more: [] };
+		const result: any = { all: [], featured: [], featuredTracks: [], more: [] };
 		const ids: any[] = [];
 
 		// Get all releases
@@ -492,6 +493,24 @@ export class GW {
 				}
 			}
 		});
+
+		// Fetch individual tracks from featured albums
+		for (const featuredAlbum of result.featured) {
+			try {
+				const albumTracks = await this.get_album_tracks(featuredAlbum.id);
+				for (const track of albumTracks) {
+					if (
+						track.ARTISTS &&
+						track.ARTISTS.some((a) => String(a.ART_ID) === String(art_id))
+					) {
+						result.featuredTracks.push(mapGwTrackToDeezer(track));
+					}
+				}
+			} catch {
+				// Skip albums where track fetching fails
+			}
+		}
+
 		return result;
 	}
 
