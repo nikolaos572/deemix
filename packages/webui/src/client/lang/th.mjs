@@ -21,6 +21,7 @@ const th = {
 		listTabs: {
 			empty: "",
 			all: "ทั้งหมด",
+			discography: "ผลงานทั้งหมด",
 			top_result: "ผลลัพธ์ที่ดีที่สุด",
 			album: "อัลบั้ม | อัลบั้ม",
 			artist: "ศิลปิน | ศิลปิน",

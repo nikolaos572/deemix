@@ -21,6 +21,7 @@ const zh_tw = {
 		listTabs: {
 			empty: "",
 			all: "所有",
+			discography: "音樂作品",
 			top_result: "最佳結果",
 			album: "專輯|專輯",
 			artist: "藝人|藝人",

@@ -14,6 +14,7 @@ const ar = {
 		listTabs: {
 			empty: "",
 			all: "الكل",
+			discography: "ديسكوغرافيا",
 			top_result: "افضل النتائج",
 			album: "البوم | البومات",
 			artist: "فنان | فنانون",
@@ -25,9 +26,15 @@ const ar = {
 			playlist: "قائمة تشغيل | قوائم تشغيل",
 			compile: "مجموعة | مجموعات",
 			ep: "ep | eps",
+			bundle: "باقة | باقات",
+			more: "المزيد من الألبومات",
+			featured: "ظهر في",
 			spotifyPlaylist: "قائمة تشغيل سبوتفاي | قوائم تشغيل سبوتفاي",
 			releaseDate: "تاريخ الاصدار",
 			error: "خطأ",
+			albumN: "0 البومات | {n} البوم | {n} البوم",
+			artistN: "0 فنانون | {n} فنان | {n} فنان",
+			playlistN: "0 قوائم تشغيل | {n} قائمة تشغيل | {n} قائمة تشغيل",
 		},
 	},
 	about: {

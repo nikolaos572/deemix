@@ -14,6 +14,7 @@ const hr = {
 		listTabs: {
 			empty: "",
 			all: "sve",
+			discography: "diskografija",
 			top_result: "Najbolji rezultat",
 			album: "album | albumi",
 			artist: "izvođač | izvođači",
@@ -25,9 +26,15 @@ const hr = {
 			playlist: "playlista | playliste",
 			compile: "kompilacija | kompilacije",
 			ep: "ep | eps",
+			bundle: "paket | paketi",
+			more: "Više albuma",
+			featured: "Pojavljuje se u",
 			spotifyPlaylist: "spotify playlista | spotify playliste",
 			releaseDate: "datum izdavanja",
 			error: "greška",
+			albumN: "0 albuma | {n} album | {n} albuma",
+			artistN: "0 izvođača | {n} izvođač | {n} izvođača",
+			playlistN: "0 playlisti | {n} playlista | {n} playliste",
 		},
 	},
 	about: {

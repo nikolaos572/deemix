@@ -14,6 +14,7 @@ const vi = {
 		listTabs: {
 			empty: "",
 			all: "tất cả",
+			discography: "thư mục âm nhạc",
 			top_result: "kết quả hàng đầu",
 			album: "album | album",
 			artist: "Nghệ sĩ | Nghệ sĩ",
@@ -25,9 +26,15 @@ const vi = {
 			playlist: "playlist | playlist",
 			compile: "tổng hợp | tổng hợp",
 			ep: "ep | ep",
+			bundle: "gói | gói",
+			more: "Thêm album",
+			featured: "Xuất hiện trong",
 			spotifyPlaylist: "playlist của spotify | playlist của spotify",
 			releaseDate: "ngày phát hành",
 			error: "lỗi",
+			albumN: "0 album | {n} album | {n} album",
+			artistN: "0 Nghệ sĩ | {n} Nghệ sĩ | {n} Nghệ sĩ",
+			playlistN: "0 playlist | {n} playlist | {n} playlist",
 		},
 	},
 	about: {

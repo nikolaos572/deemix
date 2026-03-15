@@ -21,6 +21,7 @@ const es = {
 		listTabs: {
 			empty: "",
 			all: "todo",
+			discography: "discografía",
 			top_result: "mejor resultado",
 			album: "álbum | álbumes",
 			artist: "artista | artistas",
@@ -32,12 +33,16 @@ const es = {
 			playlist: "lista de reproducción | listas de reproducción",
 			compile: "compilación | compilaciones",
 			ep: "ep | eps",
+			bundle: "paquete | paquetes",
 			more: "Más álbumes",
 			featured: "Aparece en",
 			spotifyPlaylist:
 				"lista de reproducción spotify | listas de reproducción spotify",
 			releaseDate: "fecha de publicación",
 			error: "error",
+			albumN: "0 álbumes | {n} álbum | {n} álbumes",
+			artistN: "0 artistas | {n} artista | {n} artistas",
+			playlistN: "0 listas de reproducción | {n} lista de reproducción | {n} listas de reproducción",
 		},
 	},
 	about: {

@@ -14,6 +14,7 @@ const id = {
 		listTabs: {
 			empty: "",
 			all: "semua",
+			discography: "diskografi",
 			top_result: "hasil teratas",
 			album: "album | album",
 			artist: "artis | artis",
@@ -25,9 +26,15 @@ const id = {
 			playlist: "daftar putar | daftar putar",
 			compile: "kompilasi | kompilasi",
 			ep: "ep | ep",
+			bundle: "paket | paket",
+			more: "Album lainnya",
+			featured: "Ditampilkan dalam",
 			spotifyPlaylist: "daftar putar spotify | daftar putar spotify",
 			releaseDate: "tanggal rilis",
 			error: "galat",
+			albumN: "0 album | {n} album | {n} album",
+			artistN: "0 artis | {n} artis | {n} artis",
+			playlistN: "0 daftar putar | {n} daftar putar | {n} daftar putar",
 		},
 	},
 	about: {

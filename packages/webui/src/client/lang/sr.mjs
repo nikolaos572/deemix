@@ -21,6 +21,7 @@ const sr = {
 		listTabs: {
 			empty: "",
 			all: "све",
+			discography: "дискографија",
 			top_result: "најбољи резултат",
 			album: "албум | албуме",
 			artist: "извођача | извођаче",
