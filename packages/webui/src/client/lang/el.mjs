@@ -21,6 +21,7 @@ const gr = {
 		listTabs: {
 			empty: "",
 			all: "όλα",
+			discography: "δισκογραφία",
 			top_result: "κορυφαίο αποτέλεσμα",
 			album: "άλμπουμ | άλμπουμ",
 			artist: "καλλιτέχνης | καλλιτέχνες",

@@ -14,6 +14,7 @@ const tr = {
 		listTabs: {
 			empty: "",
 			all: "Tümü",
+			discography: "diskografi",
 			top_result: "top result",
 			album: "albüm | albümler",
 			artist: "sanatçı | sanatçılar",
@@ -25,9 +26,15 @@ const tr = {
 			playlist: "oynatma listesi | oynatma listeleri",
 			compile: "derleme | derlemeler",
 			ep: "kayıt | kayıtlar",
+			bundle: "paket | paketler",
+			more: "Daha fazla albüm",
+			featured: "Öne çıkar",
 			spotifyPlaylist: "spotify oynatma listesi | oynatma listeleri",
 			releaseDate: "yayınlanma tarihi",
 			error: "hata",
+			albumN: "0 albüm | {n} albüm | {n} albüm",
+			artistN: "0 sanatçı | {n} sanatçı | {n} sanatçı",
+			playlistN: "0 oynatma listesi | {n} oynatma listesi | {n} oynatma listesi",
 		},
 	},
 	about: {

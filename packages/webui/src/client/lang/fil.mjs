@@ -21,6 +21,7 @@ const fil = {
 		listTabs: {
 			empty: "",
 			all: "lahat",
+			discography: "diskograpiya",
 			top_result: "nangungunang resulta",
 			album: "album | mga album",
 			artist: "artist | mga artist",

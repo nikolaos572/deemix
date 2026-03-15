@@ -21,6 +21,7 @@ const pt = {
 		listTabs: {
 			empty: "",
 			all: "Tudo",
+			discography: "discografia",
 			top_result: "melhor resultado",
 			album: "álbum | álbums",
 			artist: "artista | artistas",

@@ -21,6 +21,7 @@ const ko = {
 		listTabs: {
 			empty: "",
 			all: "전체",
+			discography: "디스코그래피",
 			top_result: "가장 일치하는 결과",
 			album: "앨범 | 앨범",
 			artist: "아티스트 | 아티스트",
