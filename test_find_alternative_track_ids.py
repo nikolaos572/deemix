@@ -8,19 +8,19 @@ from unittest.mock import patch
 
 # Import the module under test
 sys.path.insert(0, ".")
-import find_alternative_track_ids as fat
+import find_alternative_track_ids as alt_ids
 
 
 class TestDeezerSession(unittest.TestCase):
     """Verify DeezerSession builds requests correctly."""
 
     def test_session_sets_arl_cookie(self):
-        dz = fat.DeezerSession("test_arl_value")
+        dz = alt_ids.DeezerSession("test_arl_value")
         cookies = dz.session.cookies.get_dict()
         self.assertEqual(cookies.get("arl"), "test_arl_value")
 
     def test_session_sets_user_agent(self):
-        dz = fat.DeezerSession("x")
+        dz = alt_ids.DeezerSession("x")
         self.assertIn("Mozilla", dz.session.headers["User-Agent"])
 
 
@@ -28,12 +28,12 @@ class TestFindAlternativeTrackIDs(unittest.TestCase):
     """Test the core ID-resolution logic with mocked API responses."""
 
     def _make_session(self):
-        dz = fat.DeezerSession("fake_arl")
+        dz = alt_ids.DeezerSession("fake_arl")
         dz.api_token = "fake_token"
         return dz
 
-    @patch.object(fat.DeezerSession, "get_track_with_fallback")
-    @patch.object(fat.DeezerSession, "get_track_by_isrc")
+    @patch.object(alt_ids.DeezerSession, "get_track_with_fallback")
+    @patch.object(alt_ids.DeezerSession, "get_track_by_isrc")
     def test_redirect_detected(self, mock_isrc, mock_fallback):
         """When the resolved SNG_ID differs from the requested one, both appear."""
         mock_fallback.return_value = {
@@ -50,7 +50,7 @@ class TestFindAlternativeTrackIDs(unittest.TestCase):
 
         buf = io.StringIO()
         with patch("sys.stdout", buf):
-            fat.find_alternative_track_ids(dz, 496430132)
+            alt_ids.find_alternative_track_ids(dz, 496430132)
 
         output = buf.getvalue()
         self.assertIn("496430132", output)
@@ -58,8 +58,8 @@ class TestFindAlternativeTrackIDs(unittest.TestCase):
         self.assertIn("492212993", output)
         self.assertIn("500000001", output)
 
-    @patch.object(fat.DeezerSession, "get_track_with_fallback")
-    @patch.object(fat.DeezerSession, "get_track_by_isrc")
+    @patch.object(alt_ids.DeezerSession, "get_track_with_fallback")
+    @patch.object(alt_ids.DeezerSession, "get_track_by_isrc")
     def test_no_redirect(self, mock_isrc, mock_fallback):
         """When the resolved ID matches the requested one, no redirect note."""
         mock_fallback.return_value = {
@@ -75,15 +75,15 @@ class TestFindAlternativeTrackIDs(unittest.TestCase):
 
         buf = io.StringIO()
         with patch("sys.stdout", buf):
-            fat.find_alternative_track_ids(dz, 3135556)
+            alt_ids.find_alternative_track_ids(dz, 3135556)
 
         output = buf.getvalue()
         self.assertIn("3135556", output)
         self.assertNotIn("redirected", output)
 
-    @patch.object(fat.DeezerSession, "get_track_with_fallback")
-    @patch.object(fat.DeezerSession, "get_album_page")
-    @patch.object(fat.DeezerSession, "get_track_by_isrc")
+    @patch.object(alt_ids.DeezerSession, "get_track_with_fallback")
+    @patch.object(alt_ids.DeezerSession, "get_album_page")
+    @patch.object(alt_ids.DeezerSession, "get_track_by_isrc")
     def test_album_fallback_isrc_match(self, mock_isrc, mock_album, mock_fallback):
         """Tracks in alternative albums with matching ISRC are discovered."""
         mock_fallback.return_value = {
@@ -119,7 +119,7 @@ class TestFindAlternativeTrackIDs(unittest.TestCase):
 
         buf = io.StringIO()
         with patch("sys.stdout", buf):
-            fat.find_alternative_track_ids(dz, 3135556)
+            alt_ids.find_alternative_track_ids(dz, 3135556)
 
         output = buf.getvalue()
         self.assertIn("3135556", output)
@@ -134,21 +134,21 @@ class TestCLI(unittest.TestCase):
     def test_no_args_shows_usage(self):
         with self.assertRaises(SystemExit) as cm:
             with patch("sys.argv", ["prog"]):
-                fat.main()
+                alt_ids.main()
         self.assertEqual(cm.exception.code, 1)
 
     def test_invalid_track_id(self):
         with self.assertRaises(SystemExit) as cm:
             with patch("sys.argv", ["prog", "not_a_number"]):
-                fat.main()
+                alt_ids.main()
         self.assertEqual(cm.exception.code, 1)
 
     def test_missing_arl(self):
         with patch.dict("os.environ", {}, clear=True):
-            with patch.object(fat, "ARL", ""):
+            with patch.object(alt_ids, "ARL", ""):
                 with self.assertRaises(SystemExit) as cm:
                     with patch("sys.argv", ["prog", "12345"]):
-                        fat.main()
+                        alt_ids.main()
                 self.assertEqual(cm.exception.code, 1)
 
 

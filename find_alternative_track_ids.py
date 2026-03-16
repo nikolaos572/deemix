@@ -189,7 +189,7 @@ def find_alternative_track_ids(dz: DeezerSession, requested_id: int) -> None:
     print()
 
     # Collect every discovered ID in insertion order
-    alternatives: dict[int, str] = {}  # id → source label
+    alternatives: Dict[int, str] = {}  # id → source label
 
     # -- requested vs resolved --
     if resolved_id != requested_id:
