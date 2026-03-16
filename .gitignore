@@ -31,3 +31,5 @@ packages/webui/public/js/*
 .turbo
 tsconfig.tsbuildinfo
 vite.config.*.timestamp-*
+node_modules/
+dist/

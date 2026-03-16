@@ -271,7 +271,10 @@ export function generateTrackName(
 			.replaceAll("%explicit%", "");
 	}
 
-	filename = filename.replaceAll("%track_id%", track.id.toString());
+	filename = filename.replaceAll(
+		"%track_id%",
+		(track.originalID || track.id).toString()
+	);
 	filename = filename.replaceAll("%artist_id%", String(track.mainArtist.id));
 	if (track.playlist) {
 		filename = filename.replaceAll("%playlist_id%", track.playlist.playlistID);

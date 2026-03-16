@@ -40,6 +40,7 @@ export const formatsName = {
 
 class Track {
 	id: number;
+	originalID: number;
 	name?: string;
 	title: string;
 	MD5?: number;
@@ -81,6 +82,7 @@ class Track {
 
 	constructor() {
 		this.id = 0;
+		this.originalID = 0;
 		this.title = "";
 		this.trackToken = "";
 		this.duration = 0;
@@ -136,6 +138,9 @@ class Track {
 		refetch: boolean = true
 	) {
 		if (id && refetch) {
+			if (!this.originalID) {
+				this.originalID = id;
+			}
 			const gwTrack = await dz.gw.get_track_with_fallback(id);
 			const newTrack = map_track(gwTrack);
 
