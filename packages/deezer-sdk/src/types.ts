@@ -211,3 +211,11 @@ export interface EnrichedAPIArtist extends APIArtist {
 	md5_image?: string;
 	type?: string;
 }
+
+export interface TrackRedirectInfo {
+	requestedID: number;
+	resolvedID: number;
+	fallbackID: number;
+	isRedirected: boolean;
+	alternativeAlbumIDs: string[];
+}

@@ -7,7 +7,7 @@ import {
 	map_user_playlist,
 } from "./utils.js";
 import { GWAPIError } from "./errors.js";
-import { type APIOptions } from "./index.js";
+import { type APIOptions, type TrackRedirectInfo } from "./index.js";
 
 export const PlaylistStatus = {
 	PUBLIC: 0,
@@ -513,6 +513,31 @@ export class GW {
 			body = await this.getTrack(sng_id);
 		}
 		return body;
+	}
+
+	async getTrackRedirectInfo(
+		sng_id: string | number
+	): Promise<TrackRedirectInfo> {
+		const requestedID =
+			typeof sng_id === "string" ? parseInt(sng_id, 10) : sng_id;
+		const gwTrack = await this.get_track_with_fallback(sng_id);
+		const resolvedID = gwTrack.SNG_ID;
+		const fallbackID = gwTrack.FALLBACK ? gwTrack.FALLBACK.SNG_ID : 0;
+		const alternativeAlbumIDs: string[] = [];
+		if (gwTrack.ALBUM_FALLBACK?.data) {
+			for (const album of gwTrack.ALBUM_FALLBACK.data) {
+				if (album.ALB_ID) {
+					alternativeAlbumIDs.push(album.ALB_ID);
+				}
+			}
+		}
+		return {
+			requestedID,
+			resolvedID,
+			fallbackID,
+			isRedirected: requestedID !== resolvedID,
+			alternativeAlbumIDs,
+		};
 	}
 
 	async get_user_playlists(user_id, options: APIOptions = {}) {
