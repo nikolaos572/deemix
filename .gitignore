@@ -33,3 +33,4 @@ tsconfig.tsbuildinfo
 vite.config.*.timestamp-*
 node_modules/
 dist/
+package-lock.json
