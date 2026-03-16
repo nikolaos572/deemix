@@ -34,3 +34,5 @@ vite.config.*.timestamp-*
 node_modules/
 dist/
 package-lock.json
+__pycache__/
+*.pyc
